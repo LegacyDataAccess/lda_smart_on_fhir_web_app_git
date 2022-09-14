@@ -1,0 +1,21 @@
+﻿@model lda_smart_on_fhir_web_app.Models.OAuth2ViewModel
+
+@*@{
+    ViewBag.Title = "LDA Smart Test Launch";
+}
+<h2>@ViewBag.Title.</h2>
+<h3>@ViewBag.Message</h3*@
+Loading...
+
+    <script>
+        var redirectUrl =  '@Model.AuthUri' + "?" +
+              "response_type=code&" +
+              "client_id=" + encodeURIComponent('@Model.ClientId') + "&" +
+              "scope=" + encodeURIComponent('@Model.Scopes') + "&" +
+              "redirect_uri=" + encodeURIComponent('@Model.RedirectUri') + "&" +
+              "aud=" + encodeURIComponent('@Model.ServiceUri') + "&" +
+              "launch=" + '@Model.LaunchContextId' + "&" +
+              "state=" + '@Model.State.ToString()';
+        window.location.href = redirectUrl;
+    </script>
+

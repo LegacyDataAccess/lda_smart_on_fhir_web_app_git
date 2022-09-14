@@ -1,0 +1,121 @@
+﻿@model  lda_smart_on_fhir_web_app.Models.PatientViewModel
+
+@{
+    ViewBag.Title = "Patient Search";
+}
+
+<h2><img src="~/Images/lda_fir.png" height="48" width="48" />@ViewBag.Title</h2>
+<div>@ViewBag.ClientSystem : @ViewBag.ClientId</div>
+<div>Username : @ViewBag.EhrUserName</div>
+<p></p>
+
+<div style="border:solid;border-color:black;padding:5px;">
+    @using (Html.BeginForm("Search", "Home", FormMethod.Post))
+    {
+        <div class="row">
+            <div class="col-md-2">
+                Last Name
+                @*@Html.LabelFor(m => m.last_name, new { @class = "control-label" })*@
+            </div>
+            <div class="col-md-4">
+                @Html.TextBoxFor(m => m.last_name, new { @class = "form-control" })
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-2">
+                First Name
+                @*@Html.LabelFor(m => m.first_name, new { @class = "control-label" })*@
+            </div>
+            <div class="col-md-4">
+                @Html.TextBoxFor(m => m.first_name, new { @class = "form-control" })
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-2">
+                Date of Birth
+                @*@Html.LabelFor(m => m.dob, new { @class = "control-label" })*@
+            </div>
+            <div class="col-md-4">
+                @Html.TextBoxFor(m => m.dob, "{0:MMM/dd/yyyy}", new { @class = "form-control" })
+            </div>
+        </div>
+        @*@Html.HiddenFor(m => m.session_state)*@
+        @Html.Hidden("session_state", Model.session_state)
+        <input type="submit" id="submit" value="Search" />
+    }
+</div>
+
+<p></p>
+<h3>Full Matches</h3>
+<table width="100%" id="tblFullNameMatches" " class="table table-striped table-bordered">
+    <thead>
+        <tr>
+            <td>Last</td>
+            <td>First</td>
+            <td>DOB</td>
+            <td>Gender</td>
+            <td>Location</td>
+            <td>MRN</td>
+            <td>Match Criteria</td>
+            <td>LL App</td>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var p in Model.ldaPatients.Where(p => p.match_rank == 1).OrderBy(p => p.match_rank).ThenBy(p => p.last_name).ThenBy(p => p.first_name))
+        {
+            <tr>
+                <td>@p.last_name</td>
+                <td>@p.first_name</td>
+                <td>@p.dob</td>
+                <td>@p.gender</td>
+                <td>@p.location</td>
+                <td>@p.mrn</td>
+                <td>@p.match_criteria</td>
+                <td><a target="blank" rel="noreferrer noopener" href="@p.ll_app_url">@p.ll_app_name</a></td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+
+<p></p>
+<h3>Additional Matches</h3>
+<table width="100%" id="tblOtherMatches" class="table table-striped table-bordered">
+    <thead>
+        <tr>
+            <td>Last</td>
+            <td>First</td>
+            <td>DOB</td>
+            <td>Gender</td>
+            <td>Location</td>
+            <td>MRN</td>
+            <td>Match Criteria</td>
+            <td>LL App</td>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var p in Model.ldaPatients.Where(p => p.match_rank > 1).OrderBy(p => p.match_rank).ThenBy(p => p.last_name).ThenBy(p => p.first_name))
+        {
+            <tr>
+                <td>@p.last_name</td>
+                <td>@p.first_name</td>
+                <td>@p.dob</td>
+                <td>@p.gender</td>
+                <td>@p.location</td>
+                <td>@p.mrn</td>
+                <td>@p.match_criteria</td>
+                <td><a target="blank" rel="noreferrer noopener" href="@p.ll_app_url">@p.ll_app_name</a></td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+
+<script>
+    $(document).ready(function () {
+        $('#tblFullNameMatches').DataTable();
+        $('#tblOtherMatches').DataTable();
+    });
+
+    @*@Scripts.Render("~bundles/jqueryval")*@
+</script>
